@@ -1,0 +1,1 @@
+# AstroStatistic2022class
