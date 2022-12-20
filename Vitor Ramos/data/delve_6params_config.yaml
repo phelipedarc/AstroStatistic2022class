@@ -1,0 +1,137 @@
+DATASET:
+    NAME: MyDeeplenstronomyDataset
+    PARAMETERS:
+        SIZE: 10001 # o programa gera uma imagem a menos do que especificado, por isso o 1 no final
+        OUTDIR: SimulationResults
+    SEED: 42     # Para reproducibilidade
+
+COSMOLOGY:
+    PARAMETERS:
+        H0: 70
+        Om0: 0.3
+
+SPECIES:
+    GALAXY_1:
+        NAME: LENS # vamos especificar as caracteristicas da galaxia lente
+        LIGHT_PROFILE_1:
+            NAME: SERSIC_ELLIPSE
+            PARAMETERS: # estes parametros ficam fixos na simulacao
+                magnitude: 22
+                R_sersic: 1 # Half-light Radius
+                n_sersic: 2
+                e1: 0
+                e2: 0
+
+        MASS_PROFILE_1:
+            NAME: SIE
+            PARAMETERS:
+                # quando especificamos sigma_v, theta_E e calculado
+                sigma_v: # Estes params sao retirados de uma distribuicao normal
+                    DISTRIBUTION:
+                        NAME: uniform 
+                        PARAMETERS:
+                            minimum: 150
+                            maximum: 400
+                e1: 
+                    DISTRIBUTION: 
+                        NAME: uniform 
+                        PARAMETERS:
+                            minimum: -0.4
+                            maximum: 0.4
+                e2: 
+                    DISTRIBUTION: 
+                        NAME: uniform # use a uniform distribution on (-1,1)
+                        PARAMETERS:
+                            minimum: -0.4
+                            maximum: 0.4
+        SHEAR_PROFILE_1:
+            NAME: SHEAR
+            PARAMETERS:
+                gamma1: 0
+                   # DISTRIBUTION:
+                   #     NAME: uniform
+                   #     PARAMETERS:
+                   #         minimum: -0.5
+                   #         maximum: 0.5
+                gamma2: 0
+                    # DISTRIBUTION:
+                    #    NAME: uniform
+                    #    PARAMETERS:
+                    #        minimum: -0.5
+                    #        maximum: 0.5
+
+    GALAXY_2:
+        NAME: SOURCE # especificacoes da galaxia fonte
+        LIGHT_PROFILE_1:
+            NAME: SERSIC_ELLIPSE
+            PARAMETERS: # parametros fixos nessas simulacoes
+                magnitude: 21 #ms
+                R_sersic: 1 # Half-light Radius
+                n_sersic: 3
+                e1: 0
+                e2: 0 
+        MASS_PROFILE_1:
+            NAME: SIE 
+            PARAMETERS:
+                theta_E: 2.0
+                e1: 0.1
+                e2: -0.1
+                center_x: 0.0
+                center_y: 0.0
+
+GEOMETRY: # aqui montamos a configuracao do dataset
+    CONFIGURATION_1:
+        NAME: GALAXY_GALAXY
+        FRACTION: 1
+        PLANE_1:
+            OBJECT_1: LENS
+            PARAMETERS:
+                REDSHIFT: # redshift do plano 1 (lente) 
+                    DISTRIBUTION: 
+                        NAME: uniform 
+                        PARAMETERS:
+                            minimum: 0.2
+                            maximum: 0.4
+                   
+        PLANE_2:
+            OBJECT_1: SOURCE
+            PARAMETERS:
+                REDSHIFT: # redshift do plano 2 (fonte)    
+                    DISTRIBUTION: 
+                        NAME: uniform 
+                        PARAMETERS:
+                            minimum: 0.6
+                            maximum: 0.8
+
+
+# Configuracoes automaticas pro delve mudando bandas e numpix
+IMAGE:
+    PARAMETERS:
+        exposure_time:
+            DISTRIBUTION:
+                NAME: delve_exposure_time
+                PARAMETERS: None
+        numPix: 64
+        pixel_scale: 0.263
+        psf_type: 'GAUSSIAN'
+        read_noise: 7
+        ccd_gain:
+            DISTRIBUTION:
+                NAME: des_ccd_gain
+                PARAMETERS: None
+SURVEY:
+    PARAMETERS:
+        BANDS: g,r,i
+        seeing:
+            DISTRIBUTION:
+                NAME: delve_seeing
+                PARAMETERS: None
+        magnitude_zero_point:
+            DISTRIBUTION:
+                NAME: delve_magnitude_zero_point
+                PARAMETERS: None
+        sky_brightness:
+            DISTRIBUTION:
+                NAME: delve_sky_brightness
+                PARAMETERS: None
+        num_exposures: 1
